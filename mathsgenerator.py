@@ -4,7 +4,7 @@ import random
 # You can set the following parameters
 
 # how many rows to generate
-outputRows = 10
+outputRows = 36 
 
 # highest number for additions (both left and right)
 maxSummand = 10
@@ -61,7 +61,7 @@ for i in range( outputRows ):
 		left = gimmeNumber( 1, maxMinuend )
 		if left == 0: countZeros = countZeros + 1
 
-		right = gimmeNumber( 0, maxSubtrahend if left > maxSubtrahend else left )
+		right = gimmeNumber( 0, maxSubtrahend if ( left + 1 ) > maxSubtrahend else left + 1 )
 		if right == 0: countZeros = countZeros + 1
 
 	# other operations may be supported in the future!
