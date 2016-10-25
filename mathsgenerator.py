@@ -6,8 +6,11 @@ import random
 # how many rows to generate
 outputRows = 36 
 
-# highest number for additions (both left and right)
-maxSummand = 10
+# highest number for additions (left hand size)
+maxSummandLeft = 20
+
+# highest number for additions (right hand size)
+maxSummandRight = 10
 
 # highest number for subtraction left hand side (minuend)
 maxMinuend = 20
@@ -41,18 +44,15 @@ def gimmeNumber( minValue, maxValue ):
 for i in range( outputRows ):
 
 	# randomly decide kind of problem to generate
-	if random.randint( 0, 1 ) == 0:
-		operand = '+'
-	else:
-		operand = '-'
+	operand = random.choice( '+-' )
 
 	# generate numbers for an addition problem
 	if operand == '+':
 
-		left = gimmeNumber( 0, maxSummand )
+		left = gimmeNumber( 0, maxSummandLeft )
 		if left == 0: countZeros = countZeros + 1
 
-		right = gimmeNumber( 0, maxSummand )
+		right = gimmeNumber( 0, maxSummandRight )
 		if right == 0: countZeros = countZeros + 1
 
 	# generate numbers for an subtraction problem
