@@ -70,7 +70,7 @@ for i in range( outputRows ):
 		left = gimmeNumber( 1, maxMinuend )
 		if left == 0: countZeros = countZeros + 1
 
-		right = gimmeNumber( 0, maxSubtrahend if ( left + 1 ) > maxSubtrahend else left + 1 )
+		right = gimmeNumber( 0, maxSubtrahend if ( left ) > maxSubtrahend else left )
 		if right == 0: countZeros = countZeros + 1
 
 	elif operand == '*':
