@@ -25,13 +25,13 @@ def usage():
 
     -h, --help: prints this text
     -r, --outputrows: number of equations to be generated
-    -o, --operands: mix of operations from which a random selection will be made; proportions can be adjusted, e.g. ++- to get twice as many additions than subtractions
-    -z, --maxzeros: maximum number of zeros allowed to be generated (too many zeros make the exercise too easy :))
+    -o, --operands: mix of operations from which a random selection will be made; proportions can be adjusted, e.g. ++- to get twice as many additions as subtractions
+    -z, --maxzeros: maximum number of zeros allowed to be used in equations (too many zeros make the exercise too easy :))
     -l, --maxsummandleft: highest number for additions (left hand size)
     -r, --maxsummandright: highest number for additions (right hand size)
     -m, --maxminuend: highest number for subtraction left hand side (minuend)
     -s, --maxsubtrahend: highest number for subtraction right hand side (subtrahend)
-    -a, --maxmultiplicant: highest number for subtraction right hand side (subtrahend)
+    -a, --maxmultiplicant: highest number for multiplication left hand side (multiplicant)
     -b, --maxmultiplier: highest number for multiplication right hand side (multiplier)
 	 """
 	print textwrap.dedent( helptext )
