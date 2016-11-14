@@ -53,30 +53,30 @@ def main( argv ):
 	try:
 		opts, args = getopt.getopt( argv, "hr:o:z:l:r:m:s:a:b:", [ "help", "outputrows=", "operands=", "maxzeros=", "maxsummandleft=", "maxsummandright=", "maxminuend=", "maxsubtrahend=", "maxmultiplicant=", "maxmultiplier=" ] )
 	except getopt.GetoptError:
-		usage()                         
-		sys.exit( 2 )                   
+		usage()
+		sys.exit( 2 )
 	for opt, arg in opts:
 		if opt in ( "-h", "--help" ):
 			usage()
 			sys.exit()
 		elif opt in ( "-r", "--outputrows" ):
-			outputRows = int( arg )
+			outputRows = validateInput( opt, arg )
 		elif opt in ( "-o", "--operands" ):
 			operandMix = arg
 		elif opt in ( "-z", "--maxzeros" ):
-			maxZeros = int( arg )
+			maxZeros = validateInput( opt, arg )
 		elif opt in ( "-l", "--maxsummandleft" ):
-			maxSummandLeft = int( arg )
+			maxSummandLeft = validateInput( opt, arg )
 		elif opt in ( "-r", "--maxsummandright" ):
-			maxSummandRight = int( arg )
+			maxSummandRight = validateInput( opt, arg )
 		elif opt in ( "-m", "--maxminuend" ):
-			maxMinuend = int( arg )
+			maxMinuend = validateInput( opt, arg )
 		elif opt in ( "-s", "--maxsubtrahend" ):
-			maxSubtrahend = int( arg )
+			maxSubtrahend = validateInput( opt, arg )
 		elif opt in ( "-a", "--maxmultiplicant" ):
-			maxMultiplicant = int( arg )
+			maxMultiplicant = validateInput( opt, arg )
 		elif opt in ( "-b", "--maxmultiplier" ):
-			maxMultiplier = int( arg )
+			maxMultiplier = validateInput( opt, arg )
 
 	for i in range( outputRows ):
 		# randomly decide kind of problem to generate
@@ -98,8 +98,22 @@ def main( argv ):
 			printEquation( left, operand, right )
 		# other operations may be supported in the future!
 		else:
-			print( 'Sorry, {} operation is not supported.' ).format( operand )
+			print 'Sorry, operation "' + operand + '" is not supported.'
 			next
+
+# -------------------------------------------------------------------
+def validateInput( opt, arg ):
+	try:
+		val = int( arg )
+	except ValueError:
+		print 'Please supply a positive integer value for parameter "' + opt + '".'
+		sys.exit( 3 )
+	
+	if val <= 0:
+		print 'Please supply a positive integer value for parameter "' + opt + '".'
+		sys.exit( 3 )
+
+	return val
 
 # -------------------------------------------------------------------
 def gimmeNumber( minValue, maxValue ):
