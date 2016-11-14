@@ -84,23 +84,17 @@ def main( argv ):
 		# addition problem
 		if operand == '+':
 			left = gimmeNumber( 0, maxSummandLeft )
-			if left == 0: countZeros = countZeros + 1
 			right = gimmeNumber( 0, maxSummandRight )
-			if right == 0: countZeros = countZeros + 1
 			printEquation( left, operand, right )
 		# subtraction problem
 		elif operand == '-':
 			left = gimmeNumber( 1, maxMinuend )
-			if left == 0: countZeros = countZeros + 1
 			right = gimmeNumber( 0, maxSubtrahend if ( left ) > maxSubtrahend else left )
-			if right == 0: countZeros = countZeros + 1
 			printEquation( left, operand, right )
 		# multiplication problem
 		elif operand == 'x':
 			left = gimmeNumber( 0, maxMultiplicant )
-			if left == 0: countZeros = countZeros + 1
 			right = gimmeNumber( 0, maxMultiplier )
-			if right == 0: countZeros = countZeros + 1
 			printEquation( left, operand, right )
 		# other operations may be supported in the future!
 		else:
@@ -117,6 +111,7 @@ def gimmeNumber( minValue, maxValue ):
 	while ( randomNumber == 0 ) and ( countZeros >= maxZeros ):
 		randomNumber = random.randrange( minValue, maxValue + 1 )
 
+	if randomNumber == 0: countZeros = countZeros + 1
 	return randomNumber
 
 # -------------------------------------------------------------------
