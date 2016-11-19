@@ -19,12 +19,12 @@ countZeros = 0
 # -------------------------------------------------------------------
 def usage():
 	helptext = """    Usage:
-    mathsgenerator [-h] [-r outputrows] [-o operands] [-z maxzeros] 
+    mathsgenerator [-h] [-g outputrows] [-o operands] [-z maxzeros] 
     [-l maxsummandleft] [-r maxsummandright] [-m maxminuend] 
     [-s maxsubtrahend] [-a maxmultiplicant] [-b maxmultiplier] 
 
     -h, --help: prints this text
-    -r, --outputrows: number of equations to be generated
+    -g, --outputrows: number of equations to be generated
     -o, --operands: mix of operations from which a random selection will be made; proportions can be adjusted, e.g. ++- to get twice as many additions as subtractions
     -z, --maxzeros: maximum number of zeros allowed to be used in equations (too many zeros make the exercise too easy :))
     -l, --maxsummandleft: highest number for additions (left hand size)
@@ -51,7 +51,7 @@ def main( argv ):
 	global countZeros
 
 	try:
-		opts, args = getopt.getopt( argv, "hr:o:z:l:r:m:s:a:b:", [ "help", "outputrows=", "operands=", "maxzeros=", "maxsummandleft=", "maxsummandright=", "maxminuend=", "maxsubtrahend=", "maxmultiplicant=", "maxmultiplier=" ] )
+		opts, args = getopt.getopt( argv, "hg:o:z:l:r:m:s:a:b:", [ "help", "outputrows=", "operands=", "maxzeros=", "maxsummandleft=", "maxsummandright=", "maxminuend=", "maxsubtrahend=", "maxmultiplicant=", "maxmultiplier=" ] )
 	except getopt.GetoptError:
 		usage()
 		sys.exit( 2 )
@@ -59,7 +59,7 @@ def main( argv ):
 		if opt in ( "-h", "--help" ):
 			usage()
 			sys.exit()
-		elif opt in ( "-r", "--outputrows" ):
+		elif opt in ( "-g", "--outputrows" ):
 			outputRows = validateInput( opt, arg )
 		elif opt in ( "-o", "--operands" ):
 			operandMix = arg
