@@ -16,12 +16,21 @@ maxMultiplier = 12
 # keeps track of current number of zeros
 countZeros = 0
 
+# are we using a maximum value or a specific list for multiplication
+useListForMultiply = False
+
+# -------------------------------------------------------------------
+# some global constants
+PARAM_INT = 1
+PARAM_LIST = 2
+
 # -------------------------------------------------------------------
 def usage():
 	helptext = """    Usage:
     mathsgenerator [-h] [-g outputrows] [-o operands] [-z maxzeros] 
     [-l maxsummandleft] [-r maxsummandright] [-m maxminuend] 
     [-s maxsubtrahend] [-a maxmultiplicant] [-b maxmultiplier] 
+    [-v multipliervalues]
 
     -h, --help: prints this text
     -g, --outputrows: number of equations to be generated
@@ -33,6 +42,7 @@ def usage():
     -s, --maxsubtrahend: highest number for subtraction right hand side (subtrahend)
     -a, --maxmultiplicant: highest number for multiplication left hand side (multiplicant)
     -b, --maxmultiplier: highest number for multiplication right hand side (multiplier)
+    -v, --multipliervalues: comma separated list of values for multiplication right hand side (multiplier); if this option is specified, then -b / --maxmultiplier is ignored
 	 """
 	print textwrap.dedent( helptext )
 
@@ -48,10 +58,14 @@ def main( argv ):
 	global maxSubtrahend
 	global maxMultiplicant
 	global maxMultiplier
+	global multiplierValues
 	global countZeros
+	global useListForMultiply
+	global PARAM_INT
+	global PARAM_LIST
 
 	try:
-		opts, args = getopt.getopt( argv, "hg:o:z:l:r:m:s:a:b:", [ "help", "outputrows=", "operands=", "maxzeros=", "maxsummandleft=", "maxsummandright=", "maxminuend=", "maxsubtrahend=", "maxmultiplicant=", "maxmultiplier=" ] )
+		opts, args = getopt.getopt( argv, "hg:o:z:l:r:m:s:a:b:v:", [ "help", "outputrows=", "operands=", "maxzeros=", "maxsummandleft=", "maxsummandright=", "maxminuend=", "maxsubtrahend=", "maxmultiplicant=", "maxmultiplier=", "multipliervalues=" ] )
 	except getopt.GetoptError:
 		usage()
 		sys.exit( 2 )
@@ -60,41 +74,47 @@ def main( argv ):
 			usage()
 			sys.exit()
 		elif opt in ( "-g", "--outputrows" ):
-			outputRows = validateInput( opt, arg )
+			outputRows = validateInput( opt, arg, PARAM_INT )
 		elif opt in ( "-o", "--operands" ):
 			operandMix = arg
 		elif opt in ( "-z", "--maxzeros" ):
-			maxZeros = validateInput( opt, arg )
+			maxZeros = validateInput( opt, arg, PARAM_INT )
 		elif opt in ( "-l", "--maxsummandleft" ):
-			maxSummandLeft = validateInput( opt, arg )
+			maxSummandLeft = validateInput( opt, arg, PARAM_INT )
 		elif opt in ( "-r", "--maxsummandright" ):
-			maxSummandRight = validateInput( opt, arg )
+			maxSummandRight = validateInput( opt, arg, PARAM_INT )
 		elif opt in ( "-m", "--maxminuend" ):
-			maxMinuend = validateInput( opt, arg )
+			maxMinuend = validateInput( opt, arg, PARAM_INT )
 		elif opt in ( "-s", "--maxsubtrahend" ):
-			maxSubtrahend = validateInput( opt, arg )
+			maxSubtrahend = validateInput( opt, arg, PARAM_INT )
 		elif opt in ( "-a", "--maxmultiplicant" ):
-			maxMultiplicant = validateInput( opt, arg )
+			maxMultiplicant = validateInput( opt, arg, PARAM_INT )
 		elif opt in ( "-b", "--maxmultiplier" ):
-			maxMultiplier = validateInput( opt, arg )
+			maxMultiplier = validateInput( opt, arg, PARAM_INT )
+		elif opt in ( "-v", "--multipliervalues" ):
+			useListForMultiply = True
+			multiplierValues = validateInput( opt, arg, PARAM_LIST )
 
 	for i in range( outputRows ):
 		# randomly decide kind of problem to generate
 		operand = random.choice( operandMix )
 		# addition problem
 		if operand == '+':
-			left = gimmeNumber( 0, maxSummandLeft )
-			right = gimmeNumber( 0, maxSummandRight )
+			left = gimmeRandomNumber( 0, maxSummandLeft )
+			right = gimmeRandomNumber( 0, maxSummandRight )
 			printEquation( left, operand, right )
 		# subtraction problem
 		elif operand == '-':
-			left = gimmeNumber( 1, maxMinuend )
-			right = gimmeNumber( 0, maxSubtrahend if ( left ) > maxSubtrahend else left )
+			left = gimmeRandomNumber( 1, maxMinuend )
+			right = gimmeRandomNumber( 0, maxSubtrahend if ( left ) > maxSubtrahend else left )
 			printEquation( left, operand, right )
 		# multiplication problem
 		elif operand == 'x':
-			left = gimmeNumber( 0, maxMultiplicant )
-			right = gimmeNumber( 0, maxMultiplier )
+			left = gimmeRandomNumber( 0, maxMultiplicant )
+			if useListForMultiply:
+				right = gimmeListNumber( multiplierValues )
+			else:
+				right = gimmeRandomNumber( 0, maxMultiplier )
 			printEquation( left, operand, right )
 		# other operations may be supported in the future!
 		else:
@@ -102,21 +122,42 @@ def main( argv ):
 			next
 
 # -------------------------------------------------------------------
-def validateInput( opt, arg ):
-	try:
-		val = int( arg )
-	except ValueError:
-		print 'Please supply a positive integer value for parameter "' + opt + '".'
-		sys.exit( 3 )
-	
-	if val <= 0:
-		print 'Please supply a positive integer value for parameter "' + opt + '".'
-		sys.exit( 3 )
+def validateInput( opt, arg, argtype ):
 
-	return val
+	global PARAM_INT
+	global PARAM_LIST
+
+	if argtype == PARAM_INT:
+		try:
+			val = int( arg )
+		except ValueError:
+			print 'Please supply a positive integer value for parameter "' + opt + '".'
+			sys.exit( 3 )
+		if val <= 0:
+			print 'Please supply a positive integer value for parameter "' + opt + '".'
+			sys.exit( 3 )
+		return val
+
+	elif argtype == PARAM_LIST:
+		values = []
+		try: 
+			for item in arg.split( ","):
+				try:
+					val = int( item )
+					if val < 0:
+						print 'Please supply only non-negative integer values for parameter "' + opt + '".'
+						sys.exit( 3 )
+					values.append( val )
+				except ValueError:
+					print 'Please supply non-negative integer values for parameter "' + opt + '".'
+					sys.exit( 3 )
+		except AttributeError:
+			print 'Please supply a list of integer values for parameter "' + opt + '".'
+			sys.exit( 3 )
+		return values
 
 # -------------------------------------------------------------------
-def gimmeNumber( minValue, maxValue ):
+def gimmeRandomNumber( minValue, maxValue ):
 
 	global maxZeros
 	global countZeros
@@ -124,6 +165,21 @@ def gimmeNumber( minValue, maxValue ):
 	randomNumber = random.randrange( minValue, maxValue + 1 )
 	while ( randomNumber == 0 ) and ( countZeros >= maxZeros ):
 		randomNumber = random.randrange( minValue, maxValue + 1 )
+
+	if randomNumber == 0: countZeros = countZeros + 1
+	return randomNumber
+
+# -------------------------------------------------------------------
+def gimmeListNumber( possibleValues ):
+
+	global maxZeros
+	global countZeros
+
+	randomNumber = random.choice( possibleValues )
+	# ignore maxZeroes parameter if the list of values only has zero in it, in order to prevent an infinite loop
+	if not( len( possibleValues ) == 1 and ( possibleValues[0] == 0 ) ):
+		while ( randomNumber == 0 ) and ( countZeros >= maxZeros ):
+			randomNumber = random.choice( possibleValues )
 
 	if randomNumber == 0: countZeros = countZeros + 1
 	return randomNumber
