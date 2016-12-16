@@ -3,7 +3,7 @@ import getopt, random, sys, textwrap
 # -------------------------------------------------------------------
 # sensible defaults for input parameters
 outputRows = 10
-operandMix = '+-x'
+operandMix = '+-x/'
 maxZeros = 2
 maxSummandLeft = 90
 maxSummandRight = 10
@@ -18,7 +18,7 @@ maxDivisor = 12
 # keeps track of current number of zeros
 countZeros = 0
 
-# are we using a maximum value or a specific list for multiplication
+# are we using a maximum value or a specific list for multiplication and division
 useListForMultiply = False
 useListForDivide = False
 
