@@ -11,6 +11,8 @@ maxMinuend = 100
 maxSubtrahend = 10
 maxMultiplicant = 12
 maxMultiplier = 12
+maxFactor = 12
+maxDivisor = 12
 
 # -------------------------------------------------------------------
 # keeps track of current number of zeros
@@ -18,6 +20,7 @@ countZeros = 0
 
 # are we using a maximum value or a specific list for multiplication
 useListForMultiply = False
+useListForDivide = False
 
 # -------------------------------------------------------------------
 # some global constants
@@ -30,9 +33,12 @@ def usage():
     mathsgenerator [-h] [-g outputrows] [-o operands] [-z maxzeros] 
     [-l maxsummandleft] [-r maxsummandright] [-m maxminuend] 
     [-s maxsubtrahend] [-a maxmultiplicant] [-b maxmultiplier] 
-    [-v multipliervalues]
+    [-v multipliervalues] [-f maxfactor] [-d maxdivisor] 
+    [-w divisorvalues]
 
     -h, --help: prints this text
+    -f, --configfile: configuration file from which settings are read
+    -e, --configsection: section within the configuration file from which settings are read
     -g, --outputrows: number of equations to be generated
     -o, --operands: mix of operations from which a random selection will be made; proportions can be adjusted, e.g. ++- to get twice as many additions as subtractions
     -z, --maxzeros: maximum number of zeros allowed to be used in equations (too many zeros make the exercise too easy :))
@@ -43,6 +49,9 @@ def usage():
     -a, --maxmultiplicant: highest number for multiplication left hand side (multiplicant)
     -b, --maxmultiplier: highest number for multiplication right hand side (multiplier)
     -v, --multipliervalues: comma separated list of values for multiplication right hand side (multiplier); if this option is specified, then -b / --maxmultiplier is ignored
+    -f, --maxfactor: highest number for factor in division (maximum left hand side - dividend - is calculated by using the factor and divisor)
+    -d, --maxdivisor: highest number for division right hand size (divisor)
+    -w, --divisorvalues: comma separated list of values for division right hand side (divisor); if this option is specified, then -d / --maxdivisor is ignored
 	 """
 	print textwrap.dedent( helptext )
 
@@ -59,13 +68,17 @@ def main( argv ):
 	global maxMultiplicant
 	global maxMultiplier
 	global multiplierValues
+	global maxFactor
+	global maxDivisor
+	global divisorValues
 	global countZeros
 	global useListForMultiply
+	global useListForDivide
 	global PARAM_INT
 	global PARAM_LIST
 
 	try:
-		opts, args = getopt.getopt( argv, "hg:o:z:l:r:m:s:a:b:v:", [ "help", "outputrows=", "operands=", "maxzeros=", "maxsummandleft=", "maxsummandright=", "maxminuend=", "maxsubtrahend=", "maxmultiplicant=", "maxmultiplier=", "multipliervalues=" ] )
+		opts, args = getopt.getopt( argv, "hg:o:z:l:r:m:s:a:b:v:f:d:w:", [ "help", "outputrows=", "operands=", "maxzeros=", "maxsummandleft=", "maxsummandright=", "maxminuend=", "maxsubtrahend=", "maxmultiplicant=", "maxmultiplier=", "multipliervalues=", "maxfactor=", "maxdivisor=", "divisorvalues=" ] )
 	except getopt.GetoptError:
 		usage()
 		sys.exit( 2 )
@@ -94,6 +107,13 @@ def main( argv ):
 		elif opt in ( "-v", "--multipliervalues" ):
 			useListForMultiply = True
 			multiplierValues = validateInput( opt, arg, PARAM_LIST )
+		elif opt in ( "-f", "--maxfactor" ):
+			maxFactor = validateInput( opt, arg, PARAM_INT )
+		elif opt in ( "-d", "--maxdivisor" ):
+			maxDivisor = validateInput( opt, arg, PARAM_INT )
+		elif opt in ( "-w", "--divisorvalues" ):
+			useListForDivide = True
+			divisorValues = validateInput( opt, arg, PARAM_LIST )
 
 	for i in range( outputRows ):
 		# randomly decide kind of problem to generate
@@ -115,6 +135,14 @@ def main( argv ):
 				right = gimmeListNumber( multiplierValues )
 			else:
 				right = gimmeRandomNumber( 0, maxMultiplier )
+			printEquation( left, operand, right )
+		# division problem
+		elif operand == '/':
+			if useListForDivide:
+				right = gimmeListNumber( divisorValues )
+			else:
+				right = gimmeRandomNumber( 1, maxDivisor )
+			left = gimmeRandomNumber( 1, maxFactor ) * right
 			printEquation( left, operand, right )
 		# other operations may be supported in the future!
 		else:
