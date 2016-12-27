@@ -2,6 +2,7 @@ import getopt, random, sys, textwrap
 
 # -------------------------------------------------------------------
 # sensible defaults for input parameters
+separator = ' '
 outputRows = 10
 operandMix = '+-x/'
 maxZeros = 2
@@ -30,15 +31,15 @@ PARAM_LIST = 2
 # -------------------------------------------------------------------
 def usage():
 	helptext = """    Usage:
-    mathsgenerator [-h] [-g outputrows] [-o operands] [-z maxzeros] 
-    [-l maxsummandleft] [-r maxsummandright] [-m maxminuend] 
-    [-s maxsubtrahend] [-a maxmultiplicant] [-b maxmultiplier] 
-    [-v multipliervalues] [-f maxfactor] [-d maxdivisor] 
-    [-w divisorvalues]
+    mathsgenerator [-h] [-p separator] [-g outputrows] [-o operands] [-z maxzeros]
+    [-l maxsummandleft] [-r maxsummandright] [-m maxminuend] [-s maxsubtrahend]
+    [-a maxmultiplicant] [-b maxmultiplier] [-v multipliervalues] [-f maxfactor] 
+    [-d maxdivisor] [-w divisorvalues]
+
+    All parameters are optional, "sensible" default values will be used for any configurable setting if the option is not provided.
 
     -h, --help: prints this text
-    -f, --configfile: configuration file from which settings are read
-    -e, --configsection: section within the configuration file from which settings are read
+    -p, --separator: delimiter for the output (default is space)
     -g, --outputrows: number of equations to be generated
     -o, --operands: mix of operations from which a random selection will be made; proportions can be adjusted, e.g. ++- to get twice as many additions as subtractions
     -z, --maxzeros: maximum number of zeros allowed to be used in equations (too many zeros make the exercise too easy :))
@@ -58,6 +59,7 @@ def usage():
 # -------------------------------------------------------------------
 def main( argv ):
 
+	global separator
 	global outputRows
 	global operandMix
 	global maxZeros
@@ -78,7 +80,7 @@ def main( argv ):
 	global PARAM_LIST
 
 	try:
-		opts, args = getopt.getopt( argv, "hg:o:z:l:r:m:s:a:b:v:f:d:w:", [ "help", "outputrows=", "operands=", "maxzeros=", "maxsummandleft=", "maxsummandright=", "maxminuend=", "maxsubtrahend=", "maxmultiplicant=", "maxmultiplier=", "multipliervalues=", "maxfactor=", "maxdivisor=", "divisorvalues=" ] )
+		opts, args = getopt.getopt( argv, "hp:g:o:z:l:r:m:s:a:b:v:f:d:w:", [ "help", "separator=", "outputrows=", "operands=", "maxzeros=", "maxsummandleft=", "maxsummandright=", "maxminuend=", "maxsubtrahend=", "maxmultiplicant=", "maxmultiplier=", "multipliervalues=", "maxfactor=", "maxdivisor=", "divisorvalues=" ] )
 	except getopt.GetoptError:
 		usage()
 		sys.exit( 2 )
@@ -86,6 +88,8 @@ def main( argv ):
 		if opt in ( "-h", "--help" ):
 			usage()
 			sys.exit()
+		elif opt in ( "-p", "--separator" ):
+			separator = arg
 		elif opt in ( "-g", "--outputrows" ):
 			outputRows = validateInput( opt, arg, PARAM_INT )
 		elif opt in ( "-o", "--operands" ):
@@ -214,7 +218,7 @@ def gimmeListNumber( possibleValues ):
 
 # -------------------------------------------------------------------
 def printEquation( left, operand, right ):
-	print( '{} {} {} =' ).format( left, operand, right )
+	print( '{}{}{}{}{}{}=' ).format( left, separator, operand, separator, right, separator )
 
 # -------------------------------------------------------------------
 if __name__ == "__main__":
